@@ -1,38 +1,26 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-char* read_file(const char* name) {
-	FILE* fd = fopen(name, "r");
-	if (fd == NULL) {
-		fprintf(stderr, "wcat: cannot open file");
-		exit(74);
+void print_file(const char* path) {
+	FILE* fp = fopen(path, "r");
+	if (fp == NULL) {
+		printf("wcat: cannot open file\n");
+		exit(1);
 	}
 
-	fseek(fd, 0L, SEEK_END);
-	size_t len = ftell(fd);
-	rewind(fd);
-
-	char* buf = (char*)malloc(len);
-	if (buf == NULL) {
-		fprintf(stderr, "wcat: cannot open file");
-		exit(74);
+	char* buf = (char*)malloc(1024);
+	char* result = fgets(buf, sizeof(buf), fp);
+	while (result != NULL) {
+		printf("%s", buf);
+		result = fgets(buf, sizeof(buf), fp);
 	}
-	size_t bytes_read = fread(buf, sizeof(char), len, fd);
-	if (bytes_read < len) {
-		fprintf(stderr, "wcat: cannot open file");
-		exit(74);
-	}
-	buf[bytes_read] = '\0';
-
-	fclose(fd);
-	return buf;
+	free(buf);
+	fclose(fp);
 }
 
 int main(int argc, const char* argv[]) {
-	for (int  i = 1; i < argc; i++) {
-		char* text = read_file(argv[i]);
-		printf("%s", text);
-		free(text);
+	for (int i = 1; i < argc; ++i) {
+		print_file(argv[i]);
 	}
 	return 0;
 }
