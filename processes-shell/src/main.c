@@ -1,6 +1,22 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+void interpret(char *line) {
+  printf("interpret line: %s", line);
+  size_t length = strlen(line);
+  // this kills the line break because we hates it
+  char *line_copy = malloc(sizeof(char) * --length);
+  line_copy = strncpy(line_copy, line, length);
+  printf("args:");
+  while (line_copy != NULL) {
+    char *separated = strsep(&line_copy, " ");
+    printf(" [ %s ]", separated);
+  }
+  printf("\n");
+  free(line_copy);
+}
 
 void repl(void) {
   size_t line_size = 1024;
@@ -12,7 +28,7 @@ void repl(void) {
       free(line);
       exit(0);
     }
-    printf("got: %s\n", line);
+    interpret(line);
   }
 }
 
@@ -32,7 +48,7 @@ void batch(const char *name) {
       fclose(fp);
       exit(0);
     }
-    printf("got: %s\n", line);
+    interpret(line);
   }
 }
 
